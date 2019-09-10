@@ -1,8 +1,8 @@
 import numpy as np
 
-def get_clrchkr(img, roi):
-    return (img[int(roi[1]):int(roi[1] + roi[3]), 
-                      int(roi[0]):int(roi[0] + roi[2])]).copy()
+def get_clrchkr(img, mask):
+    return (img[int(mask[0, 1]):int(mask[0,1] + mask[0,3]), 
+                      int(mask[0,0]):int(mask[0,0] + mask[0,2])]).copy()
 
 def get_patch_color(clrchkr, patch_polygon_x, patch_polygon_y):
     x1 = np.amax(patch_polygon_x[0:2])
@@ -14,7 +14,7 @@ def get_patch_color(clrchkr, patch_polygon_x, patch_polygon_y):
 
 def wb(img, mask):
     img /= get_patch_color(img, mask[0,0] + mask[1], mask[0,1] + mask[2])
-    return img / np.amax(img)
+    return img
 
 def get_pallete(clrchkr, mask):
     palette = np.zeros((24, 24, 3))
@@ -50,10 +50,20 @@ def transform(A, img):
     return img_t
 
 
-def angdiff(img1, img2):
-    diff = np.zeros(img1.shape)
-    for i in range(diff.shape[0]):
-        for j in range(diff.shape[1]):
-            diff[i, j, :] = np.arccos(round(np.dot(img1[i, j], img2[i, j]) / \
-                np.linalg.norm(img1[i, j]) / np.linalg.norm(img2[i, j]), 9))
-    return diff
+# def angdiff(img1, img2):
+#     # diff = np.zeros(img1.shape)
+#     # for i in range(diff.shape[0]):
+#     #     for j in range(diff.shape[1]):
+#     #         diff[i, j, :] = 180 * np.arccos(round(np.dot(img1[i, j], img2[i, j]) / \
+#     #             np.linalg.norm(img1[i, j]) / np.linalg.norm(img2[i, j]), 9)) / np.pi
+#     # return diff
+
+#     diff = img1[:,:,0] * img2[:,:,0] + img1[:,:,1] * img2[:,:,1] + img1[:,:,2] * img2[:,:,2]
+#     diff =diff / np.sqrt(img1[:,:,0] * img1[:,:,0] + img1[:,:,1] * img1[:,:,1] + img1[:,:,2] * img1[:,:,2])
+#     diff = diff / np.sqrt(img2[:,:,0] * img2[:,:,0] + img2[:,:,1] * img2[:,:,1] + img2[:,:,2] * img2[:,:,2])
+#     diff = 180 * np.arccos(np.round(diff, 9)) / np.pi
+#     diffpic = np.zeros(img1.shape)
+#     diffpic[:,:,0] = diff
+#     diffpic[:,:,1] = diff
+#     diffpic[:,:,2] = diff
+#     return diff
