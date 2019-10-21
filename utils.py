@@ -14,6 +14,8 @@ def get_patch_color(clrchkr, patch_polygon_x, patch_polygon_y):
     return np.array([(patch[:,:,0]).mean(), (patch[:,:,1]).mean(), (patch[:,:,2]).mean()])
 
 def wb(img, mask):
+    img = img.copy()
+    print("WB:", get_patch_color(img, mask[0,0] + mask[1], mask[0,1] + mask[2]))
     img /= get_patch_color(img, mask[0,0] + mask[1], mask[0,1] + mask[2])
     return img
 
@@ -76,3 +78,6 @@ def angdiff(img1, img2):
     diffpic[:,:,1] = diff
     diffpic[:,:,2] = diff
     return diff
+
+if __name__ == "__main__":
+    pass
