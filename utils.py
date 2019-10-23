@@ -1,5 +1,4 @@
 import numpy as np
-from sklearn import linear_model
 
 def get_clrchkr(img, mask):
     return (img[int(mask[0, 1]):int(mask[0,1] + mask[0,3]), 
@@ -14,8 +13,6 @@ def get_patch_color(clrchkr, patch_polygon_x, patch_polygon_y):
     return np.array([(patch[:,:,0]).mean(), (patch[:,:,1]).mean(), (patch[:,:,2]).mean()])
 
 def wb(img, mask):
-    img = img.copy()
-    print("WB:", get_patch_color(img, mask[0,0] + mask[1], mask[0,1] + mask[2]))
     img /= get_patch_color(img, mask[0,0] + mask[1], mask[0,1] + mask[2])
     return img
 
@@ -45,22 +42,6 @@ def calcA(src, res):
     A = np.array([a[0:3], a[3:6], a[6:9]])
     return A   
 
-def fitA(X, y):
-    y_r = y[:, 0]
-    y_g = y[:, 1]
-    y_b = y[:, 2]
-    r_clsf = linear_model.LinearRegression()
-    g_clsf = linear_model.LinearRegression()
-    b_clsf = linear_model.LinearRegression()
-    r_clsf.fit(X, y_r)
-    g_clsf.fit(X, y_g)
-    b_clsf.fit(X, y_b)
-    A = np.zeros((3, 3))
-    A[0] = r_clsf.coef_
-    A[1] = g_clsf.coef_
-    A[2] = b_clsf.coef_
-    return A
-
 def transform(A, img):
     img_t = img.copy()
     h = img_t.shape[0]
@@ -68,16 +49,21 @@ def transform(A, img):
     img_t = np.reshape((np.dot(A, (np.reshape(img_t, (h * l, 3))).T)).T, (h, l, 3))
     return img_t
 
-def angdiff(img1, img2):
-    diff = img1[:,:,0] * img2[:,:,0] + img1[:,:,1] * img2[:,:,1] + img1[:,:,2] * img2[:,:,2]
-    diff =diff / np.sqrt(img1[:,:,0] ** 2 + img1[:,:,1] ** 2 + img1[:,:,2] ** 2 + 0.000001)
-    diff = diff / np.sqrt(img2[:,:,0] ** 2 + img2[:,:,1] ** 2 + img2[:,:,2] ** 2 + 0.000001)
-    diff = 180 * np.arccos(np.round(diff, 6)) / np.pi
-    diffpic = np.zeros(img1.shape)
-    diffpic[:,:,0] = diff
-    diffpic[:,:,1] = diff
-    diffpic[:,:,2] = diff
-    return diff
 
-if __name__ == "__main__":
-    pass
+# def angdiff(img1, img2):
+#     # diff = np.zeros(img1.shape)
+#     # for i in range(diff.shape[0]):
+#     #     for j in range(diff.shape[1]):
+#     #         diff[i, j, :] = 180 * np.arccos(round(np.dot(img1[i, j], img2[i, j]) / \
+#     #             np.linalg.norm(img1[i, j]) / np.linalg.norm(img2[i, j]), 9)) / np.pi
+#     # return diff
+
+#     diff = img1[:,:,0] * img2[:,:,0] + img1[:,:,1] * img2[:,:,1] + img1[:,:,2] * img2[:,:,2]
+#     diff =diff / np.sqrt(img1[:,:,0] * img1[:,:,0] + img1[:,:,1] * img1[:,:,1] + img1[:,:,2] * img1[:,:,2])
+#     diff = diff / np.sqrt(img2[:,:,0] * img2[:,:,0] + img2[:,:,1] * img2[:,:,1] + img2[:,:,2] * img2[:,:,2])
+#     diff = 180 * np.arccos(np.round(diff, 9)) / np.pi
+#     diffpic = np.zeros(img1.shape)
+#     diffpic[:,:,0] = diff
+#     diffpic[:,:,1] = diff
+#     diffpic[:,:,2] = diff
+#     return diff
